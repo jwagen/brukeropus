@@ -53,14 +53,14 @@ class Opus:
             response: response from OPUS software through DDE request in bytes format.'''
         return self.dde.request(req_str, timeout)
 
-    def parse_response(self, byte_response: bytes, decode='ascii'):
+    def parse_response(self, byte_response: bytes, decode='ascii', req_str: str = ''):
         '''Parses the byte response from a raw DDE request query.  If an error is detected in the request, an Exception
         is raised.  If successful, a boolean, string or list of strings will be returned as appropriate.
 
         Args:
             byte_response: response from OPUS software through DDE request in bytes format.
             decode: format used to decode bytes into string (e.g. 'ascii' or 'utf-8')
-
+            req_str: The original request string sent to OPUS over DDE.  This is used for error reporting in the case that the response contains an error message.
         Returns:
             response: parsed response from OPUS software (bool, string, or list of strings depending on request)'''
         str_response = byte_response.decode(decode)
@@ -103,7 +103,7 @@ class Opus:
             response: parsed response from OPUS software (bool, string, or list of strings depending on request)
         '''
         response = self.raw_query(req_str=req_str, timeout=timeout)
-        return self.parse_response(response, decode=decode)
+        return self.parse_response(response, decode=decode, req_str=req_str)
 
     def close_opus(self):
         '''Closes the OPUS application. Returns `True` if successful.'''
