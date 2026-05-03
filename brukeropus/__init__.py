@@ -65,7 +65,4 @@ More detailed documentation on the control submodule can be found in `brukeropus
 
 from brukeropus.file import OPUSFile, read_opus, find_opus_files, parse_file_and_print
 
-try:
-    from brukeropus.control import Opus
-except:
-    pass
+from brukeropus.control import Opus

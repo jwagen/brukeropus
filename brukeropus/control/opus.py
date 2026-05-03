@@ -246,6 +246,27 @@ class Opus:
         opus_file = read_opus(filepath)
         os.remove(filepath)
         return opus_file
+    
+    def atmospheric_compensation(self, filepath=None):
+        '''Performs atmospheric compensation using current settings in OPUS software.'''
+        if filepath is not None:
+            filename = f"[ {filepath} ]"
+        else:
+            filename = '0'
+        return self.send_command(f"H2Ocomp ({filename}, 0, {{H2O=3}})")
+
+    def search_spectrum(self, libraries: list[str], **kwargs):
+        '''Searches for a spectrum in the specified libraries.
+
+        Args:
+            libraries: list of library names to search in
+            kwargs: any valid three character parameter code (case insensitive)
+
+        Returns:
+            response: `True` if successful
+        '''
+        # Implementation for searching spectrum in libraries
+        pass
 
     def save_ref(self):
         '''Saves current reference to file (according to current filename and path set in advanced experiment) and
