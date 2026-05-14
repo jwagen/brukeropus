@@ -36,4 +36,5 @@ plt.show()
 For complete `Opus` documentation, see: `brukeropus.control.opus`
 '''
 from brukeropus.control.dde import DDEClient
+from brukeropus.control.named_pipe import NamedPipeClient
 from brukeropus.control.opus import *

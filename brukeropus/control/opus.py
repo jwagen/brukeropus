@@ -1,5 +1,6 @@
 import os
 from brukeropus.control import DDEClient
+from brukeropus.control import NamedPipeClient
 from brukeropus import read_opus
 
 __docformat__ = "google"
@@ -20,26 +21,31 @@ ERROR_CODES = {
 class Opus:
     '''Class for communicating with currently running OPUS software using DDE interface.  Class automatically attempts
     to connect to OPUS software upon initialization.'''
-    dde = None
-    connected = False
     error_string = 'Error'
+    def __init__(self, connection_type='DDE'):
+        self.connection = None
+        #self.connected = False
 
-    def connect(self):
+        self.connect(connection_type)
+        if self.connection:
+            self.opus_path = self.get_opus_path()
+
+    def connect(self, connection_type='DDE'):
         '''Connects class to OPUS software through the DDE interface.  Sets the `connected` attribute to `True` if
         successful.  By default, initializing an `Opus` class will automatically attempt to connect to OPUS.'''
         try:
-            self.dde = DDEClient("Opus", "System")
-            self.connected = True
+            if connection_type == 'NamedPipe':
+                self.connection = NamedPipeClient()
+            elif self.connection_type == "DDE":
+                self.connection = DDEClient("Opus", "System")
         except Exception as e:
-            self.connected = False
             raise Exception("Failed to connect to OPUS Software: " + str(e))
 
     def disconnect(self):
         '''Disconnects DDE client/server connection.'''
-        if self.connected:
-            self.dde.__del__()
-            self.dde = None
-            self.connected = False
+        if self.connection:
+            self.connection.disconnect()
+            self.connection = None
 
     def raw_query(self, req_str: str, timeout=10000):
         '''Sends command/request string (`req_str`) to OPUS and returns the response in byte format.
@@ -51,7 +57,7 @@ class Opus:
 
         Returns:
             response: response from OPUS software through DDE request in bytes format.'''
-        return self.dde.request(req_str, timeout)
+        return self.connection.request(req_str, timeout)
 
     def parse_response(self, byte_response: bytes, decode='ascii', req_str: str = ''):
         '''Parses the byte response from a raw DDE request query.  If an error is detected in the request, an Exception
@@ -295,9 +301,8 @@ class Opus:
             return ''
 
     def __bool__(self):
-        return self.connected
+        if self.connection:
+            return True
+        else:
+            return False
 
-    def __init__(self):
-        self.connect()
-        if self.connected:
-            self.opus_path = self.get_opus_path()
